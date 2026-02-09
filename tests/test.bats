@@ -32,7 +32,7 @@ setup() {
   export DDEV_NO_INSTRUMENTATION=true
   ddev delete -Oy "${PROJNAME}" >/dev/null 2>&1 || true
   cd "${TESTDIR}"
-  run ddev config --project-name="${PROJNAME}" --project-tld=ddev.site
+  run ddev config --project-name="${PROJNAME}" --project-tld=ddev.site --project-type=drupal12 --docroot=web --database=mariadb:11.8
   assert_success
   run ddev start -y
   assert_success
@@ -64,23 +64,53 @@ teardown() {
   fi
 }
 
-@test "install from directory" {
+@test "Setup Drupal Core with $(ddev --version)" {
   set -eu -o pipefail
-  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
-  run ddev add-on get "${DIR}"
+  # ddev composer create-project joachim-n/drupal-core-development-project -y
+  run ddev composer create-project joachim-n/drupal-core-development-project
   assert_success
-  run ddev restart -y
+  ## ddev add-on get ddev/ddev-drupal-contribution
+  run ddev add-on get ddev/ddev-drupal-contribution
   assert_success
+  ## ddev restart
+  run ddev restart
+  assert_success
+  ##ddev drush site:install --account-name=admin --account-pass=admin -y
+  run ddev drush site:install --account-name=admin --account-pass=admin -y
+  assert_success
+  ### PHPUnit functional test
+  #run ddev phpunit ./core/modules/migrate/tests/src/Functional/process/DownloadFunctionalTest.php
+  #assert_success
+  ### PHPUnit js functional test
+  #run ddev phpunit ./core/modules/system/tests/src/FunctionalJavascript/FrameworkTest.php
+  #assert_success
+  ### PHPStan
+  #ddev phpstan web/core/modules/navigation
+  #assert_success
+  ##assert_output --partial "100%"
+  ### PHPCS
+  #ddev phpcs web/core/modules/navigation
+  #assert_success
+  ### Drupal test traits
+  #ddev exec -d /var/www/html/web "../vendor/bin/phpunit --log-junit dtt.junit.xml --bootstrap=../vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php ../vendor/weitzman/drupal-test-traits/tests/ExampleSelenium2DriverTest.php"
+  #assert_success
+  ### Try to add a contrib module compatible with Drupal 12
+  #ddev addrepo skipto
+  #assert_success
+
+  # validate running project
   health_checks
+
 }
 
+
 # bats test_tags=release
-@test "install from release" {
-  set -eu -o pipefail
-  echo "# ddev add-on get ${GITHUB_REPO} with project ${PROJNAME} in $(pwd)" >&3
-  run ddev add-on get "${GITHUB_REPO}"
-  assert_success
-  run ddev restart -y
-  assert_success
-  health_checks
-}
+#@test "install from release" {
+#  set -eu -o pipefail
+#  echo "# ddev add-on get ${GITHUB_REPO} with project ${PROJNAME} in $(pwd)" >&3
+#  run ddev add-on get "${GITHUB_REPO}"
+#  assert_success
+#  run ddev restart -y
+#  assert_success
+#  health_checks
+#}

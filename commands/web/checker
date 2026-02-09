@@ -1,0 +1,9 @@
+#!/bin/bash
+
+## Description: Show DDEV env vars
+## Usage: checker
+## Example: "ddev checker"
+
+echo $DDEV_COMPOSER_ROOT/
+echo $DDEV_DOCROOT/modules/custom/
+echo $DDCC_DOCROOT

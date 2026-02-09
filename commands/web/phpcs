@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+## Description: Run PHPStan test against a repo
+## Usage: phpcs
+## Example: "ddev phpcs web/core/modules/navigation"
+
+phpcs -s --report-full --report-summary --report-source "$@"

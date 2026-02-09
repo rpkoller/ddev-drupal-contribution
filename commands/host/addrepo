@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+## Description: Git clone a repo and symlink it
+## Usage: addrepo
+## Example: "ddev addrepo skipto"
+
+repo="$@"
+
+# Check if the chosen directory already exist, if so abort
+if [ -d "repos/${repo}" ]; then
+  echo "Directory does exist. Exiting."
+  exit 1
+fi
+
+#Clone the repo into the repos directory
+git clone git@git.drupal.org:project/${repo}.git repos/${repo}
+
+# Add chosen repo to the composer.json repositories section
+jq --arg varname "$repo" '
+  .repositories |= (
+    map(if .type == "composer" and .url == "https://packages.drupal.org/8"
+        then
+          [{"type": "path", "url": ("repos/" + $varname)}, .]
+        else
+          [.]
+        end
+    ) | add
+  )
+' composer.json > composer.json.new && mv composer.json.new composer.json
+
+echo "${repo} added to the composer.json repositories section."
+
+# Determin the active git branch
+current_branch=$(git -C ./repos/${repo} branch --show-current)
+
+# Ask if the version of the active branch should be composer required and smylinked 
+# or if the script should end instead.
+read -p "Composer require and symlink current branch of ${repo}? (y/n) " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  ddev composer require drupal/${repo}:${current_branch}
+else
+  echo "The version of the active branch was not required and symlinked. You can do on your own."
+fi

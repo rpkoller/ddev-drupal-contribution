@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+## Description: Run Nightwatch test
+## Usage: nightwatch
+## Example: "ddev nightwatch tests/Drupal/Nightwatch/Tests/exampleTest.js"
+
+cd /var/www/html/web/core
+yarn test:nightwatch "$@"

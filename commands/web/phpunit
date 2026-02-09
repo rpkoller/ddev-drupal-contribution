@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+## Description: Run PHPunit test
+## Usage: phpunit
+## Example: "ddev phpunit ./core/modules/migrate/tests/src/Functional/process/DownloadFunctionalTest.php"
+
+cd repos
+phpunit -c ./drupal/core/phpunit.xml.dist "$@"
