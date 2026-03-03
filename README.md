@@ -15,7 +15,7 @@ The addon is not suited for the general usage yet. It is still in early developm
 ```bash
 ddev config --project-type=drupal12 --docroot=web
 ddev composer create-project joachim-n/drupal-core-development-project
-ddev add-on get ddev/ddev-drupal-contribution
+ddev add-on get rpkoller/ddev-drupal-contribution
 ddev restart
 ddev drush si standard --account-name=admin --account-pass=admin
 ```
