@@ -3,6 +3,7 @@ ddev_version_constraint: '>= v1.25.0'
 
 project_files:
   - fs-check.sh
+  - exclude.sh
   - config.ddev-drupal-contribution.yaml
   - commands/host/addrepo
   - commands/web/eslint
@@ -18,12 +19,14 @@ dependencies:
 
 post_install_actions:
   - sh fs-check.sh
+  - sh exclude.sh
   - ddev composer require weitzman/drupal-test-traits
   - ddev exec -d /var/www/html/web/core yarn install
   - ddev exec -d /var/www/html/web/core touch .env
 
 removal_actions:
   - rm fs-check.sh
+  - rm exclude.sh
   - rm config.ddev-drupal-core-contribution.yaml
   - rm commands/host/addrepo
   - rm commands/web/eslint

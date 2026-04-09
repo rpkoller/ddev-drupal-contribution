@@ -15,9 +15,10 @@ The addon is not suited for the general usage yet. It is still in early developm
 ```bash
 ddev config --project-type=drupal12 --docroot=web
 ddev composer create-project joachim-n/drupal-core-development-project
+ddev composer require drush/drush
 ddev add-on get rpkoller/ddev-drupal-contribution
 ddev restart
-ddev drush si standard --account-name=admin --account-pass=admin
+ddev drush si standard --account-name=admin --account-pass=admin -y
 ```
 
 ## Install a contrib module
